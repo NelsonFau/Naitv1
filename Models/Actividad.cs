@@ -34,5 +34,8 @@ namespace Naitv1.Models
             "Asado",
             "Trabajar"
         };
+
+        public int CiudadId { get; set; }
+        public Ciudad? Ciudad { get; set; }
     }
 }

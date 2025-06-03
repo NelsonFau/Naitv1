@@ -37,6 +37,9 @@ namespace Naitv1.Migrations
                     b.Property<int>("AnfitrionId")
                         .HasColumnType("int");
 
+                    b.Property<int>("CiudadId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("FechCreación")
                         .HasColumnType("datetime2");
 
@@ -64,7 +67,25 @@ namespace Naitv1.Migrations
 
                     b.HasIndex("AnfitrionId");
 
+                    b.HasIndex("CiudadId");
+
                     b.ToTable("Actividades", (string)null);
+                });
+
+            modelBuilder.Entity("Naitv1.Models.Ciudad", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Ciudades");
                 });
 
             modelBuilder.Entity("Naitv1.Models.RegistroEmail", b =>
@@ -207,7 +228,15 @@ namespace Naitv1.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Naitv1.Models.Ciudad", "Ciudad")
+                        .WithMany("ListActividades")
+                        .HasForeignKey("CiudadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Anfitrion");
+
+                    b.Navigation("Ciudad");
                 });
 
             modelBuilder.Entity("Naitv1.Models.RegistroNotificacion", b =>
@@ -215,13 +244,13 @@ namespace Naitv1.Migrations
                     b.HasOne("Naitv1.Models.Actividad", "Actividad")
                         .WithMany()
                         .HasForeignKey("ActividadId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Naitv1.Models.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Actividad");
@@ -251,6 +280,11 @@ namespace Naitv1.Migrations
             modelBuilder.Entity("Naitv1.Models.Actividad", b =>
                 {
                     b.Navigation("RegistrosParticipacion");
+                });
+
+            modelBuilder.Entity("Naitv1.Models.Ciudad", b =>
+                {
+                    b.Navigation("ListActividades");
                 });
 
             modelBuilder.Entity("Naitv1.Models.Usuario", b =>

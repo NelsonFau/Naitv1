@@ -5,6 +5,7 @@ using Naitv1.Data.Repositories;
 using Naitv1.Data;
 using Naitv1.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Naitv1.Controllers
 {
@@ -99,7 +100,12 @@ namespace Naitv1.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-      
+        public IActionResult FormularioCsvCiudad()
+        {
+
+            ViewBag.CiudadId = new SelectList(_context.Ciudades, "Id", "Nombre"); 
+            return View(); 
+        }
 
 
         public class ImagenDto

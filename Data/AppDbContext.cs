@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Naitv1.Models;
 
 
@@ -15,7 +16,7 @@ namespace Naitv1.Data
             base.OnConfiguring(optionsBuilder);
 
             optionsBuilder.UseSqlServer(
-                "Server=localhost\\SQLEXPRESS;Database=naitv1;Trusted_Connection=True;TrustServerCertificate=True;",
+                "Server=DESKTOP-FAL53AC\\SQLEXPRESS;Database=ObliNaitv1;Trusted_Connection=True;TrustServerCertificate=True;",
                 x => x.UseNetTopologySuite()
             );
         }
@@ -43,14 +44,32 @@ namespace Naitv1.Data
                 entity.Property(actividad => actividad.Ubicacion)
                     .HasColumnType("geography");
             });
+            modelBuilder.Entity<RegistroNotificacion>()
+            .HasOne(r => r.Usuario)
+            .WithMany()
+            .HasForeignKey(r => r.UsuarioId)
+            .OnDelete(DeleteBehavior.Restrict); // <- Evita cascada
 
-       }
+            modelBuilder.Entity<RegistroNotificacion>()
+            .HasOne(r => r.Actividad)
+            .WithMany()
+            .HasForeignKey(r => r.ActividadId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Actividad>()
+             .HasOne(a => a.Ciudad)
+             .WithMany(c => c.ListActividades)
+             .HasForeignKey(a => a.CiudadId);
+        }
+
+    
 
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Actividad> Actividades { get; set; }
         public DbSet<RegistroEmail> RegistroEmails { get; set; }
         public DbSet<RegistroParticipacion> RegistrosParticipacion { get; set; }
-        public DbSet<RegistroNotificacion> RegistroNotificaciones { get; set; }
+        public DbSet<RegistroNotificacion> RegistroNotificaciones { get; set; } 
+        public DbSet<Ciudad> Ciudades { get; set; }
     }
     
 }
