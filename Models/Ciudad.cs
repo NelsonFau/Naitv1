@@ -3,9 +3,14 @@
     public class Ciudad
     {
         public int Id { get; set; }
-        public string? Nombre { get; set; }
+        public string? Nombre { get; set; } 
 
-        public List<Actividad> ListActividades = new List<Actividad>();
+        public float lat { get; set; }
+        public float lon { get; set; }
+
+
+        public List<Actividad> ListActividades { get; set; } = new List<Actividad>();
 
     }
+
 }
