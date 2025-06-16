@@ -7,8 +7,15 @@
         public string Asunto { get; set; }
         public string CuerpoHtml { get; set; }  
         public DateTime FechaProgramada { get; set; }
-        public string Estado { get; set; } = "Pendiente";
+        public EstadoEmail Estado { get; set; } = EstadoEmail.Pendiente;
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
     }
+    public enum EstadoEmail
+    {
+        Pendiente = 0,
+        Completado = 1,
+        Fallido = 2
+    }
+
 }

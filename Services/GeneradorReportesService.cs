@@ -15,21 +15,33 @@ namespace Naitv1.Services
             _context = context;
         }
 
-        public void CrearRegistro(DateTime fechaProgramada, string desitinatario, string asunto)
+        public void CrearRegistro(DateTime fechaProgramada, string destinatario, string asunto)
         {
-            string html = GenerarHtmlConReporte();
-
-            RegistroEmail registro = new RegistroEmail
+            var registro = new RegistroEmail
             {
-                Destinatario = desitinatario,
+                Destinatario = destinatario,
                 Asunto = asunto,
-                CuerpoHtml = html,
                 FechaProgramada = fechaProgramada,
+                FechaCreacion = DateTime.UtcNow
             };
+
+            try
+            {
+                string html = GenerarHtmlConReporte();
+                registro.CuerpoHtml = html;
+                registro.Estado = EstadoEmail.Completado;
+            }
+            catch (Exception ex)
+            {
+                // Log del error si es necesario
+                registro.CuerpoHtml = $"<p>Error al generar el reporte: {ex.Message}</p>";
+                registro.Estado = EstadoEmail.Fallido;
+            }
 
             _context.RegistroEmails.Add(registro);
             _context.SaveChanges();
         }
+
 
         public string GenerarHtmlConReporte()
         {
