@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Naitv1.Migrations
 {
     /// <inheritdoc />
-    public partial class primeraMigracion : Migration
+    public partial class primeraMigración : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -41,6 +41,23 @@ namespace Naitv1.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ConfiguracionReportes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DiaObjetivo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Hora = table.Column<int>(type: "int", nullable: false),
+                    Minuto = table.Column<int>(type: "int", nullable: false),
+                    Destinatario = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Asunto = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConfiguracionReportes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RegistroEmails",
                 columns: table => new
                 {
@@ -50,7 +67,7 @@ namespace Naitv1.Migrations
                     Asunto = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CuerpoHtml = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FechaProgramada = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Estado = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Estado = table.Column<int>(type: "int", nullable: false),
                     FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -126,6 +143,9 @@ namespace Naitv1.Migrations
 
             migrationBuilder.DropTable(
                 name: "ActividadesUsuarios");
+
+            migrationBuilder.DropTable(
+                name: "ConfiguracionReportes");
 
             migrationBuilder.DropTable(
                 name: "RegistroEmails");

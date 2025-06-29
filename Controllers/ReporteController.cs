@@ -97,12 +97,17 @@ namespace Naitv1.Controllers
         [HttpPost]
         public IActionResult CrearCrearRegistroEmailManual(string destinatario, string asunto, DateTime fechaProgramada)
         {
+            if (fechaProgramada < DateTime.Today)
+            {
+                TempData["MensajeError"] = "La fecha programada no puede ser anterior a hoy.";
+                return RedirectToAction("FormReport");
+            }
+
             _reporteService.CrearRegistro(fechaProgramada, destinatario, asunto);
             TempData["Mensaje"] = "Mensaje programado correctamente.";
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("FormReport");
         }
-
-		[HttpGet]
+        [HttpGet]
 		public IActionResult FormularioCsvCiudad()
 		{
 			ViewBag.CiudadId = new SelectList(_context.Ciudades, "Id", "Nombre");

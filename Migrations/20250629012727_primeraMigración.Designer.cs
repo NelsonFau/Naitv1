@@ -12,8 +12,8 @@ using Naitv1.Data;
 namespace Naitv1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250608203850_primeraMigracion")]
-    partial class primeraMigracion
+    [Migration("20250629012727_primeraMigración")]
+    partial class primeraMigración
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,6 +111,37 @@ namespace Naitv1.Migrations
                     b.ToTable("Ciudades");
                 });
 
+            modelBuilder.Entity("Naitv1.Models.ConfiguracionReporte", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Asunto")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Destinatario")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DiaObjetivo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Hora")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Minuto")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConfiguracionReportes");
+                });
+
             modelBuilder.Entity("Naitv1.Models.RegistroEmail", b =>
                 {
                     b.Property<int>("Id")
@@ -131,9 +162,8 @@ namespace Naitv1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Estado")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");

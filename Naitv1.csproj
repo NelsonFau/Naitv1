@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\" />
     <Folder Include="Services\BackGroundSerivces\" />
     <Folder Include="wwwroot\graficos\" />
   </ItemGroup>
