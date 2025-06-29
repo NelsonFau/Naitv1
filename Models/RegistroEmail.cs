@@ -1,4 +1,6 @@
-﻿namespace Naitv1.Models
+﻿using X.PagedList;
+
+namespace Naitv1.Models
 {
     public class RegistroEmail
     {
@@ -9,6 +11,7 @@
         public DateTime FechaProgramada { get; set; }
         public EstadoEmail Estado { get; set; } = EstadoEmail.Pendiente;
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+    
 
     }
     public enum EstadoEmail

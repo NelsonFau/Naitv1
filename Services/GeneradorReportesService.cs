@@ -15,21 +15,22 @@ namespace Naitv1.Services
             _context = context;
         }
 
-        public void CrearRegistro(DateTime fechaProgramada, string destinatario, string asunto)
+        public int CrearRegistro(DateTime fechaProgramada, string destinatario, string asunto)
         {
             var registro = new RegistroEmail
             {
                 Destinatario = destinatario,
                 Asunto = asunto,
                 FechaProgramada = fechaProgramada,
-                FechaCreacion = DateTime.UtcNow
+                FechaCreacion = DateTime.UtcNow,
+                Estado = EstadoEmail.Pendiente
+
             };
 
             try
             {
                 string html = GenerarHtmlConReporte();
                 registro.CuerpoHtml = html;
-                registro.Estado = EstadoEmail.Completado;
             }
             catch (Exception ex)
             {
@@ -40,6 +41,8 @@ namespace Naitv1.Services
 
             _context.RegistroEmails.Add(registro);
             _context.SaveChanges();
+            return registro.Id;
+
         }
 
 
@@ -47,7 +50,12 @@ namespace Naitv1.Services
         {
             string rutaImagen = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "graficos", "graficoKpis.png");
 
-            // Leemos la imagen como base64
+            // ⚠️ Asegurate de tener estas entidades en tu DbContext
+            int totalActividades = _context.Actividades.Count();
+            int totalCiudades = _context.Ciudades.Count();
+            int totalUsuarios = _context.Usuarios.Count();
+
+            // Leer imagen del gráfico
             byte[] imagenBytes = File.ReadAllBytes(rutaImagen);
             string base64Imagen = Convert.ToBase64String(imagenBytes);
 
@@ -57,14 +65,16 @@ namespace Naitv1.Services
             <body>
                 <h2>Reporte Semanal</h2>
                 <ul>
-                    <li><b>Ventas:</b> $3,200</li>
-                    <li><b>Actividades creadas:</b> 57</li>
+                    <li><b>Total de Actividades:</b> {totalActividades}</li>
+                    <li><b>Total de Ciudades:</b> {totalCiudades}</li>
+                    <li><b>Total de Usuarios:</b> {totalUsuarios}</li>
                 </ul>
                 <h3>Gráfico:</h3>
                 <img src='data:image/png;base64,{base64Imagen}' width='400' height='200' />
             </body>
             </html>";
         }
+
 
     }
 }

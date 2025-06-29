@@ -11,17 +11,20 @@
 <body>
     <h2>Generando gráfico...</h2>
     <canvas id="graficoKpis" width="400" height="200"></canvas>
-    <a href="/Reporte/Imprimir" class="btn btn-primary">Descargar PDF</a>
-    <p>Total de actividades: @ViewBag.Actividad</p>
+    <a href="/Reporte/Imprimir?registroId=@ViewBag.RegistroId" class="btn btn-primary">Descargar PDF</a>
+    <br />
+    <button onclick="window.history.back()" class="btn btn-secondary">Volver</button>
+
+
     <script>
         const ctx = document.getElementById('graficoKpis').getContext('2d');
         const chart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Actividades', 'Usuarios'],
+                labels: ['Actividades', 'Usuarios', 'Ciudades'],
                 datasets: [{
                     label: 'KPIs',
-                    data: [@ViewBag.Actividad, @ViewBag.Usuarios],
+                    data: [@ViewBag.Actividad, @ViewBag.Usuarios, @ViewBag.Ciudades],
                     backgroundColor: [
                         'rgba(54, 162, 235, 0.5)',
                         'rgba(255, 206, 86, 0.5)',

@@ -1,0 +1,56 @@
+﻿@model RegistroEmailFiltroViewModel
+@using X.PagedList.Mvc.Core
+
+<h2>Historial de Registro de Emails</h2>
+
+<form method="get" class="row mb-4">
+     <select name="estadoEmail" class="form-control">
+        <option value="">-- Todos los estados --</option>
+        @foreach (EstadoEmail estado in Enum.GetValues(typeof(EstadoEmail)))
+        {
+            var selected = Model.EstadoEmail == estado ? "selected" : "";
+            <option value="@estado" selected>@estado</option>
+        }
+    </select>
+
+    <div class="col-md-3">
+        <input type="date" name="fechaDesde" value="@Model.FechaDesde?.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <input type="date" name="fechaHasta" value="@Model.FechaHasta?.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Destinatario</th>
+            <th>Fecha Programada</th>
+            <th>Estado Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Resultados)
+        {
+            <tr>
+                <td>@item.Destinatario</td>
+                <td>@item.FechaProgramada.ToString("dd/MM/yyyy")</td>
+                <td>@item.Estado</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-center">
+    @Html.PagedListPager(Model.Resultados, page => Url.Action("HistorialReporte", "Reporte", new
+        {
+            page,
+            estadoEmail = Model.EstadoEmail,
+            fechaDesde = Model.FechaDesde?.ToString("yyyy-MM-dd"),
+            fechaHasta = Model.FechaHasta?.ToString("yyyy-MM-dd")
+        }))
+
+</div>

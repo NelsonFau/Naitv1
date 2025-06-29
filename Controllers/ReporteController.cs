@@ -8,6 +8,7 @@ using Naitv1.Models.Dto;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text;
 using System.Text.Json;
+using X.PagedList.Extensions;
 
 namespace Naitv1.Controllers
 {
@@ -29,22 +30,35 @@ namespace Naitv1.Controllers
             _configuracionReporteService = configService;
         }
 
-        public IActionResult Imprimir()
+        public IActionResult Imprimir(int registroId)
         {
-            string html = _reporteService.GenerarHtmlConReporte();
-            byte[] pdfBytes = _pdfServices.GeneradorPdfHTML(html);
+            var registro = _context.RegistroEmails.Find(registroId);
+            if (registro == null)
+            {
+                return NotFound();
+            }
 
+            string html = registro.CuerpoHtml ?? _reporteService.GenerarHtmlConReporte();
+            registro.Estado = EstadoEmail.Completado;
+            _context.SaveChanges();
+
+            byte[] pdfBytes = _pdfServices.GeneradorPdfHTML(html);
 
             return File(pdfBytes, "application/pdf", "reporte.pdf");
         }
 
-        public IActionResult VerGrafico()
+
+
+        public IActionResult VerGrafico(int registroId)
         {
             int actividades = _context.Actividades.Count();
             int usuarios = _context.Usuarios.Count();
+            int ciudades = _context.Ciudades.Count();
             ViewBag.Actividad = actividades;
             ViewBag.Usuarios = usuarios;
-            
+            ViewBag.Ciudades = ciudades;
+            ViewBag.RegistroId = registroId;
+
 
             if (UsuarioLogueado.esSuperAdmin(HttpContext.Session) == false)
             {
@@ -102,10 +116,10 @@ namespace Naitv1.Controllers
                 TempData["MensajeError"] = "La fecha programada no puede ser anterior a hoy.";
                 return RedirectToAction("FormReport");
             }
-
-            _reporteService.CrearRegistro(fechaProgramada, destinatario, asunto);
+            int id = _reporteService.CrearRegistro(fechaProgramada, destinatario, asunto);
             TempData["Mensaje"] = "Mensaje programado correctamente.";
-            return RedirectToAction("FormReport");
+
+            return RedirectToAction("VerGrafico", new { registroId = id });
         }
         [HttpGet]
 		public IActionResult FormularioCsvCiudad()
@@ -178,6 +192,43 @@ namespace Naitv1.Controllers
             _configuracionReporteService.Guardar(config);
             return RedirectToAction("EditConfigReporte");
 
+        }
+
+        [HttpGet]
+        public IActionResult HistorialReporte(EstadoEmail? estadoEmail, DateTime? fechaDesde, DateTime? fechaHasta, int page = 1)
+        {
+            var query = _context.RegistroEmails.AsQueryable();
+
+            if (estadoEmail.HasValue)
+            {
+                query = query.Where(e => e.Estado == estadoEmail.Value);
+            }
+
+
+            if (fechaDesde.HasValue)
+            {
+                query = query.Where(e => e.FechaProgramada >= fechaDesde.Value);
+            }
+
+            if (fechaHasta.HasValue)
+            {
+                query = query.Where(e => e.FechaProgramada <= fechaHasta.Value);
+            }
+
+            var pagedList = query
+                .OrderByDescending(e => e.FechaProgramada)
+                .ToPagedList(page, 10);
+
+            var viewModel = new RegistroEmailFiltroViewModel
+            {
+                EstadoEmail = estadoEmail,
+                FechaDesde = fechaDesde,
+                FechaHasta = fechaHasta,
+                Page = page,
+                Resultados = pagedList
+            };
+
+            return View("HistorialReporte", viewModel);
         }
 
 
