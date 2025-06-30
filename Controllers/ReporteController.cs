@@ -51,6 +51,10 @@ namespace Naitv1.Controllers
 
         public IActionResult VerGrafico(int registroId)
         {
+            if (UsuarioLogueado.esSuperAdmin(HttpContext.Session) == false)
+            {
+                return RedirectToAction("RestriccionAcceso", "Reporte");
+            }
             int actividades = _context.Actividades.Count();
             int usuarios = _context.Usuarios.Count();
             int ciudades = _context.Ciudades.Count();
@@ -111,6 +115,10 @@ namespace Naitv1.Controllers
         [HttpPost]
         public IActionResult CrearCrearRegistroEmailManual(string destinatario, string asunto, DateTime fechaProgramada)
         {
+            if (UsuarioLogueado.esSuperAdmin(HttpContext.Session) == false)
+            {
+                return RedirectToAction("RestriccionAcceso", "Reporte");
+            }
             if (fechaProgramada < DateTime.Today)
             {
                 TempData["MensajeError"] = "La fecha programada no puede ser anterior a hoy.";
@@ -124,17 +132,18 @@ namespace Naitv1.Controllers
         [HttpGet]
 		public IActionResult FormularioCsvCiudad()
 		{
-			ViewBag.CiudadId = new SelectList(_context.Ciudades, "Id", "Nombre");
+            if (UsuarioLogueado.esSuperAdmin(HttpContext.Session) == false)
+            {
+                return RedirectToAction("RestriccionAcceso", "Reporte");
+            }
+            ViewBag.CiudadId = new SelectList(_context.Ciudades, "Id", "Nombre");
 			return View();
 		}
 
 		[HttpPost]
 		public IActionResult FormularioCsvCiudad(Actividad model)
 		{
-            if (UsuarioLogueado.esSuperAdmin(HttpContext.Session) == false)
-            {
-                return RedirectToAction("RestriccionAcceso", "Reporte");
-            }
+           
             ViewBag.CiudadId = new SelectList(_context.Ciudades, "Id", "Nombre");
 
 			int ciudadId = model.CiudadId;
@@ -172,6 +181,10 @@ namespace Naitv1.Controllers
 
         public IActionResult EditConfigReporte()
         {
+            if (UsuarioLogueado.esSuperAdmin(HttpContext.Session) == false)
+            {
+                return RedirectToAction("RestriccionAcceso", "Reporte");
+            }
             ///va a mostrar la ultima fecha que se programo
             var config = _configuracionReporteService.Obtener();
             return View(config);
@@ -180,7 +193,8 @@ namespace Naitv1.Controllers
         [HttpPost]
         public IActionResult EditConfigReporte(ConfiguracionReporte config)
         {
-           
+            
+
             Console.WriteLine("Post recibido: " + JsonSerializer.Serialize(config));
                
 
@@ -197,6 +211,10 @@ namespace Naitv1.Controllers
         [HttpGet]
         public IActionResult HistorialReporte(EstadoEmail? estadoEmail, DateTime? fechaDesde, DateTime? fechaHasta, int page = 1)
         {
+            if (UsuarioLogueado.esSuperAdmin(HttpContext.Session) == false)
+            {
+                return RedirectToAction("RestriccionAcceso", "Reporte");
+            }
             var query = _context.RegistroEmails.AsQueryable();
 
             if (estadoEmail.HasValue)
